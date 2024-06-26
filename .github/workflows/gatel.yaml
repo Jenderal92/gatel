@@ -1,22 +1,23 @@
-name: Release Notification
+name: Inline Message Workflow
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
 
 jobs:
-  notify-on-release:
+  send-inline-message:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Telegram Notification on New Release
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Send Inline Telegram Message
         uses: cbrgm/telegram-github-action@v1
         with:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           message: |
-            🚀 New Release Published!
-            Release Name: ${{ github.event.release.name }}
-            Tag: ${{ github.event.release.tag_name }}
-            Actor: ${{ github.actor }}
+            New commit by ${{ github.actor }}!
+            Commit: ${{ github.event.head_commit.message }}
             Repository: ${{ github.repository }}
-            Check it out: ${{ github.event.release.html_url }}j
+            View changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
