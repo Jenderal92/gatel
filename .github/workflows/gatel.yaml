@@ -1,21 +1,22 @@
-name: Jenderal92_Bot
+name: Release Notification
 
 on:
-  push:
-    paths:
-      - 'main/**'  
+  release:
+    types: [published]
 
 jobs:
-  notify:
+  notify-on-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Send message to Telegram
-        if: github.event_name == 'push'
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          REPO_NAME: ${{ github.repository }}
-        run: |
-          curl -X POST https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage \
-            -d chat_id=${TELEGRAM_CHAT_ID} \
-            -d text="New file uploaded to repository ${REPO_NAME}\nURL: https://github.com/${REPO_NAME}/tree/main"
+      - name: Send Telegram Notification on New Release
+        uses: cbrgm/telegram-github-action@v1
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          message: |
+            🚀 New Release Published!
+            Release Name: ${{ github.event.release.name }}
+            Tag: ${{ github.event.release.tag_name }}
+            Actor: ${{ github.actor }}
+            Repository: ${{ github.repository }}
+            Check it out: ${{ github.event.release.html_url }}j
